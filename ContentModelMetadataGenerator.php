@@ -6,13 +6,18 @@
 
 namespace neam\yii_content_model_metadata_generators;
 
-class ContentModelMetadataGenerator extends \yii\gii\generators\model\Generator
+use yii\helpers\Json;
+use Yii;
+
+abstract class ContentModelMetadataGenerator extends \yii\gii\Generator
 {
+
+    public $ns;
 
     /**
      * @var null string
      */
-    public $jsonPath = null;
+    public $jsonPathAlias = null;
 
     /**
      * @inheritdoc
@@ -22,7 +27,7 @@ class ContentModelMetadataGenerator extends \yii\gii\generators\model\Generator
         return array_merge(
             parent::rules(),
             [
-                [['jsonPath'], 'safe'],
+                [['jsonPathAlias'], 'required'],
             ]
         );
     }
@@ -35,7 +40,7 @@ class ContentModelMetadataGenerator extends \yii\gii\generators\model\Generator
         return array_merge(
             parent::attributeLabels(),
             [
-                'jsonPath' => 'Path to content-model-metadata.json',
+                'jsonPathAlias' => 'Path alias to content-model-metadata.json',
             ]
         );
     }
@@ -48,11 +53,18 @@ class ContentModelMetadataGenerator extends \yii\gii\generators\model\Generator
         return array_merge(
             parent::hints(),
             [
-                'jsonPath' => 'This json file should contain metadata about the item types and attributes for the current content model',
+                'jsonPathAlias' => 'This json file should contain metadata about the item types and attributes for the current content model',
             ]
         );
     }
 
+    public function getContentModelMetadata()
+    {
 
+        $path = Yii::getAlias($this->jsonPathAlias);
+        $json = file_get_contents($path);
+        return Json::decode($json, false);
+
+    }
 
 }

@@ -27,8 +27,8 @@ class Bootstrap implements BootstrapInterface
     {
         if ($app->hasModule('gii')) {
 
-            if (!isset($app->getModule('gii')->generators['content-model-metadata-model-metadata'])) {
-                $app->getModule('gii')->generators['content-model-metadata-model-metadata'] = 'neam\yii_content_model_metadata_generators\model_metadata\Generator';
+            if (!isset($app->getModule('gii')->generators['content-model-metadata-model-trait'])) {
+                $app->getModule('gii')->generators['content-model-metadata-model-trait'] = 'neam\yii_content_model_metadata_generators\model_trait\Generator';
             }
             if (!isset($app->getModule('gii')->generators['content-model-metadata-helper'])) {
                 $app->getModule('gii')->generators['content-model-metadata-helper'] = 'neam\yii_content_model_metadata_generators\helper\Generator';
