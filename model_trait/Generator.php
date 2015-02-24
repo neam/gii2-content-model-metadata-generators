@@ -116,6 +116,9 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
                 'itemType' => $itemType,
                 'traitName' => $traitName,
                 'ns' => $this->ns,
+                'statusRequirements' => $this->generateStatusRequirements($itemType),
+                'flowSteps' => $this->generateFlowSteps($itemType),
+                'flowStepCaptions' => $this->generateFlowStepCaptions($itemType),
                 'labels' => $this->generateLabels($itemType),
                 'hints' => $this->generateHints($itemType),
             ];
@@ -155,6 +158,42 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
         }
 
         return $this->itemTypes = $itemTypes;
+    }
+
+    public function generateStatusRequirements($itemType)
+    {
+        $statusRequirements = [];
+        foreach ($itemType->attributes as $attribute) {
+            if (empty($attribute->preparableStatusRequirement)) {
+                continue;
+            }
+            $statusRequirements[$attribute->preparableStatusRequirement->ref][] = $attribute->ref;
+        }
+        return $statusRequirements;
+    }
+
+    public function generateFlowSteps($itemType)
+    {
+        $flowSteps = [];
+        foreach ($itemType->attributes as $attribute) {
+            if (empty($attribute->workflowItemStep)) {
+                continue;
+            }
+            $flowSteps[$attribute->workflowItemStep->ref][] = $attribute->ref;
+        }
+        return $flowSteps;
+    }
+
+    public function generateFlowStepCaptions($itemType)
+    {
+        $flowStepCaptions = [];
+        foreach ($itemType->attributes as $attribute) {
+            if (empty($attribute->workflowItemStep)) {
+                continue;
+            }
+            $flowStepCaptions[$attribute->workflowItemStep->ref] = $attribute->workflowItemStep->_title;
+        }
+        return $flowStepCaptions;
     }
 
     /**
