@@ -20,7 +20,7 @@ use yii\helpers\Json;
 class Generator extends \neam\yii_content_model_metadata_generators\ContentModelMetadataGenerator
 {
 
-    public $ns = 'app\models\metadata';
+    public $ns = 'app\models\metadata\traits';
 
     /**
      * @var null string
