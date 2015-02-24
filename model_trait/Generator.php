@@ -112,6 +112,8 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
 
             $traitName = $itemType->model_class . 'Trait';
 
+            $dependencies = $this->generateDependencies($itemType);
+
             $params = [
                 'itemType' => $itemType,
                 'traitName' => $traitName,
@@ -121,6 +123,11 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
                 'flowStepCaptions' => $this->generateFlowStepCaptions($itemType),
                 'labels' => $this->generateLabels($itemType),
                 'hints' => $this->generateHints($itemType),
+                'traits' => $dependencies['traits'],
+                'mixins' => $dependencies['mixins'],
+                'rules' => $dependencies['rules'],
+                'relations' => $dependencies['relations'],
+                'attributes' => $dependencies['attributes'],
             ];
 
             $modelTraitFile = Yii::getAlias('@' . str_replace('\\', '/', $this->ns)) . '/' . $traitName . '.php';
@@ -228,6 +235,198 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
             $labels[$attribute->ref] = $attribute->hint;
         }
         return $labels;
+    }
+
+    const MIXIN_HAS_MANY_HANDSONTABLE_INPUT = 'has-many-handsontable-input';
+    const MIXIN_I18N_ATTRIBUTE_MESSAGES = 'i18n-attribute-messages';
+    const MIXIN_I18N_COLUMNS_ATTRIBUTE = 'i18n-columns-attribute';
+    const MIXIN_I18N_COLUMNS_RELATION = 'i18n-columns-relation';
+    const MIXIN_OWNABLE = 'ownable';
+    const MIXIN_PERMALINKABLE_FILES = 'permalinkable-files';
+    const MIXIN_PERMALINKABLE_ITEM = 'permalinkable-item';
+    const MIXIN_RESTRICTED_ACCESS = 'restricted-access';
+    const MIXIN_RELATIONAL_GRAPH_DB = 'relational-graph-db';
+    const MIXIN_RELATED_ITEMS_SIR_TREVOR_UI = 'related-items-sir-trevor-ui-behavior';
+    const MIXIN_QA_STATE = 'qa-state';
+
+    protected function generateDependencies($itemType)
+    {
+
+        $traits = [];
+        $mixins = [];
+        $rules = [];
+        $relations = [];
+        $attributes = [];
+
+        // is_translatable
+        if ($itemType->is_translatable) {
+
+            // Get attributes to translate and what mixin to use
+            foreach ($itemType->attributes as $attribute) {
+                if (empty($attribute->translatableBehaviorChoice)) {
+                    continue;
+                }
+                $mixins[$attribute->translatableBehaviorChoice->ref][] = $attribute->ref;
+            }
+
+        }
+
+        // is_listable
+        if ($itemType->is_listable) {
+
+            $attributes[] = 'thumb';
+            $attributes[] = 'heading';
+            $attributes[] = 'subheading';
+            $attributes[] = 'caption';
+
+        }
+
+        // is_presentable
+        if ($itemType->is_presentable) {
+
+            $attributes[] = 'about';
+            $attributes[] = 'related';
+            $attributes[] = 'contributions';
+
+        }
+
+        // is_composable
+        if ($itemType->is_composable) {
+
+            $attributes[] = 'composition';
+            $attributes[] = 'composition_type_id';
+
+        }
+
+        // is_graph_relatable
+        if ($itemType->is_graph_relatable) {
+
+            $traits[] = 'GraphRelatableItemTrait';
+            $relations[] = '$this->graphRelatableItemBaseRelations()';
+            $mixins[static::MIXIN_RELATIONAL_GRAPH_DB] = [];
+            $attributes[] = 'node_id';
+
+        }
+
+        // is_permalinkable
+        if ($itemType->is_permalinkable) {
+
+            $traits[] = '\neam\yii_permalinkable_items_core\traits\PermalinkableItemTrait';
+            $mixins[static::MIXIN_HAS_MANY_HANDSONTABLE_INPUT] = 'routes';
+            $mixins[static::MIXIN_PERMALINKABLE_ITEM] = [];
+            $attributes[] = 'routes';
+
+        }
+
+        // has_permalinkable_files
+        $permalinkable_file_route_attribute_refs = [];
+        foreach ($itemType->attributes as $attribute) {
+            // Check for file route attributes
+            if (!empty($attribute->permalinkable_file_route_attribute_ref)) {
+                $permalinkable_file_route_attribute_refs[] = $attribute->permalinkable_file_route_attribute_ref;
+            }
+        }
+        if (!empty($permalinkable_file_route_attribute_refs)) {
+            $traits[] = '\neam\yii_permalinkable_items_core\traits\PermalinkableItemTrait';
+            $mixins[static::MIXIN_PERMALINKABLE_FILES] = $permalinkable_file_route_attribute_refs;
+            $attributes[] = 'fileRoutes';
+        }
+
+        // attributes with edit_relation_using_handsontable_input
+        foreach ($itemType->attributes as $attribute) {
+            if (!empty($attribute->edit_relation_using_handsontable_input)) {
+                $mixins[static::MIXIN_HAS_MANY_HANDSONTABLE_INPUT][] = $attribute->ref;
+            }
+        }
+
+        // attributes with edit_relation_using_sir_trevor_ui
+        foreach ($itemType->attributes as $attribute) {
+            if (!empty($attribute->edit_relation_using_sir_trevor_ui)) {
+                $mixins[static::MIXIN_RELATED_ITEMS_SIR_TREVOR_UI][] = [$attribute->ref => $attribute->graph_relation_item_type_constraint];
+            }
+        }
+
+        // is_ownable
+        if ($itemType->is_ownable) {
+
+            $mixins[static::MIXIN_OWNABLE] = [];
+            $attributes[] = 'owner_id';
+
+        }
+
+        // is_workflow_item
+        if ($itemType->is_workflow_item) {
+
+            $traits[] = 'ItemTrait';
+            $relations['changesets'] = "array(CActiveRecord::HAS_MANY, 'Changeset', array('id' => 'node_id'), 'through' => 'node')";
+            $mixins[static::MIXIN_HAS_MANY_HANDSONTABLE_INPUT] = 'changesets';
+
+        }
+
+        // is_preparable
+        if ($itemType->is_preparable) {
+
+            $mixins[static::MIXIN_QA_STATE] = [];
+            $attributes[] = $itemType->table . '_qa_state_id';
+
+        }
+
+        // is_access_restricted
+        if ($itemType->is_access_restricted) {
+
+            $traits[] = 'RestrictedAccessItemTrait';
+            $mixins[static::MIXIN_RESTRICTED_ACCESS] = [];
+            $attributes[] = 'node_id';
+            $attributes[] = 'owner_id';
+
+        }
+
+        // is_versioned
+        if ($itemType->is_versioned) {
+
+            $attributes[] = 'version';
+            $attributes[] = 'cloned_from_id';
+
+        }
+
+        // is_timestamped
+        if ($itemType->is_timestamped) {
+
+            $attr = $itemType->attributes;
+
+            // generate correct settings for created and/or modified fields
+            if (array_key_exists("created", $attr) && array_key_exists("modified", $attr)) {
+                $behaviors['CTimestampBehavior'] = array(
+                    'class' => 'zii.behaviors.CTimestampBehavior',
+                    'createAttribute' => 'created',
+                    'updateAttribute' => 'modified',
+                );
+            }
+            if (array_key_exists("created", $attr) && !array_key_exists("modified", $attr)) {
+                $behaviors['CTimestampBehavior'] = array(
+                    'class' => 'zii.behaviors.CTimestampBehavior',
+                    'createAttribute' => 'created',
+                    'updateAttribute' => null,
+                );
+            }
+
+        }
+
+        // is_labeled
+        if ($itemType->is_labeled) {
+
+            $attributes[] = 'label';
+
+        }
+
+        return [
+            'traits' => $traits,
+            'mixins' => $mixins,
+            'rules' => $rules,
+            'relations' => $relations,
+            'attributes' => $attributes,
+        ];
+
     }
 
 }
