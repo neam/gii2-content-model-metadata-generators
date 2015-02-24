@@ -108,7 +108,7 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
     {
         $files = [];
 
-        foreach ($this->getItemTypes() as $itemType) {
+        foreach ($this->getMatchingItemTypes() as $itemType) {
 
             $traitName = $itemType->model_class . 'Trait';
 
@@ -137,7 +137,7 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
     /**
      * @return array the item types that match the pattern specified by [[itemType]].
      */
-    protected function getItemTypes()
+    protected function getMatchingItemTypes()
     {
         if ($this->itemTypes !== null) {
             return $this->itemTypes;
