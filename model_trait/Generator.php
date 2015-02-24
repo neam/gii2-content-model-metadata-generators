@@ -115,9 +115,10 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
             $params = [
                 'itemType' => $itemType,
                 'traitName' => $traitName,
-                //'labels' => $this->generateLabels($tableSchema),
                 //'rules' => $this->generateRules($tableSchema),
                 //'relations' => isset($relations[$className]) ? $relations[$className] : [],
+                'labels' => $this->generateLabels($itemType),
+                'hints' => $this->generateHints($itemType),
                 'ns' => $this->ns,
             ];
 
@@ -156,6 +157,40 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
         }
 
         return $this->itemTypes = $itemTypes;
+    }
+
+    /**
+     * Generates the attribute labels for the specified item type.
+     * @param stdCass $itemType the item type metadata
+     * @return array the generated attribute labels (name => label)
+     */
+    public function generateLabels($itemType)
+    {
+        $labels = [];
+        foreach ($itemType->attributes as $attribute) {
+            if (empty($attribute->label)) {
+                continue;
+            }
+            $labels[$attribute->ref] = $attribute->label;
+        }
+        return $labels;
+    }
+
+    /**
+     * Generates the attribute labels for the specified item type.
+     * @param stdCass $itemType the item type metadata
+     * @return array the generated attribute labels (name => label)
+     */
+    public function generateHints($itemType)
+    {
+        $labels = [];
+        foreach ($itemType->attributes as $attribute) {
+            if (empty($attribute->hint)) {
+                continue;
+            }
+            $labels[$attribute->ref] = $attribute->hint;
+        }
+        return $labels;
     }
 
 }
