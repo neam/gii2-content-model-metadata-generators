@@ -115,11 +115,9 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
             $params = [
                 'itemType' => $itemType,
                 'traitName' => $traitName,
-                //'rules' => $this->generateRules($tableSchema),
-                //'relations' => isset($relations[$className]) ? $relations[$className] : [],
+                'ns' => $this->ns,
                 'labels' => $this->generateLabels($itemType),
                 'hints' => $this->generateHints($itemType),
-                'ns' => $this->ns,
             ];
 
             $modelTraitFile = Yii::getAlias('@' . str_replace('\\', '/', $this->ns)) . '/' . $traitName . '.php';
