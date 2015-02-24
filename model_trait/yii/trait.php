@@ -13,7 +13,6 @@ echo "<?php\n";
  */
 trait <?= $traitName . "\n" ?>
 {
-    // TODO: Implement this template
     /**
      * Define status-dependent fields
      * @return array
