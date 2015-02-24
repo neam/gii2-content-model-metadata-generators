@@ -14,6 +14,27 @@ echo "<?php\n";
 class <?= $helperName . "\n" ?>
 {
 
+    static public function exists($modelClass)
+    {
+        return in_array($modelClass, array_keys(static::all()));
+    }
+
+    static public function label($modelClass, $n)
+    {
+
+        $choiceFormat = static::choiceFormatLabel($modelClass);
+        return Yii::t('app', $choiceFormat, $n);
+
+    }
+
+    static public function choiceFormatLabel($modelClass)
+    {
+
+        $labels = static::choiceFormatLabels();
+        return $labels[$modelClass];
+
+    }
+
     static public function all()
     {
         return [
@@ -21,11 +42,6 @@ class <?= $helperName . "\n" ?>
             '<?= $itemType->model_class; ?>' => '<?= $itemType->table; ?>',
 <?php endforeach; ?>
         ];
-    }
-
-    static public function label($modelClass, $n)
-    {
-
     }
 
     /**
