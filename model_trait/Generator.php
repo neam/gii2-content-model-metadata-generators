@@ -20,6 +20,8 @@ use yii\helpers\Json;
 class Generator extends \neam\yii_content_model_metadata_generators\ContentModelMetadataGenerator
 {
 
+    public $enableI18N = true;
+    public $messageCategory = 'app';
     public $ns = 'app\models\metadata\traits';
 
     /**
@@ -113,14 +115,15 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
             $traitName = $itemType->model_class . 'Trait';
 
             $dependencies = $this->generateDependencies($itemType);
+            //var_dump($dependencies);die();
 
             $params = [
                 'itemType' => $itemType,
                 'traitName' => $traitName,
                 'ns' => $this->ns,
-                'statusRequirements' => $this->generateStatusRequirements($itemType),
-                'flowSteps' => $this->generateFlowSteps($itemType),
-                'flowStepCaptions' => $this->generateFlowStepCaptions($itemType),
+                'statusRequirements' => $itemType->is_preparable ? $this->generateStatusRequirements($itemType) : [],
+                'flowSteps' => $itemType->is_workflow_item ? $this->generateFlowSteps($itemType) : [],
+                'flowStepCaptions' => $itemType->is_workflow_item ? $this->generateFlowStepCaptions($itemType) : [],
                 'labels' => $this->generateLabels($itemType),
                 'hints' => $this->generateHints($itemType),
                 'traits' => $dependencies['traits'],
@@ -266,8 +269,14 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
                 if (empty($attribute->translatableBehaviorChoice)) {
                     continue;
                 }
+
+                // Check attribute type
+
+
                 $mixins[$attribute->translatableBehaviorChoice->ref][] = $attribute->ref;
             }
+
+            $rules[] = '$this->i18nRules()';
 
         }
 
@@ -302,8 +311,8 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
         if ($itemType->is_graph_relatable) {
 
             $traits[] = 'GraphRelatableItemTrait';
-            $relations[] = '$this->graphRelatableItemBaseRelations()';
             $mixins[static::MIXIN_RELATIONAL_GRAPH_DB] = [];
+            $relations[] = '$this->graphRelatableItemBaseRelations()';
             $attributes[] = 'node_id';
 
         }
@@ -312,8 +321,9 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
         if ($itemType->is_permalinkable) {
 
             $traits[] = '\neam\yii_permalinkable_items_core\traits\PermalinkableItemTrait';
-            $mixins[static::MIXIN_HAS_MANY_HANDSONTABLE_INPUT] = 'routes';
+            $mixins[static::MIXIN_HAS_MANY_HANDSONTABLE_INPUT][] = 'routes';
             $mixins[static::MIXIN_PERMALINKABLE_ITEM] = [];
+            $relations[] = '$this->permalinkableItemRelations()';
             $attributes[] = 'routes';
 
         }
@@ -328,8 +338,8 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
         }
         if (!empty($permalinkable_file_route_attribute_refs)) {
             $traits[] = '\neam\yii_permalinkable_items_core\traits\PermalinkableItemTrait';
+            $mixins[static::MIXIN_HAS_MANY_HANDSONTABLE_INPUT][] = 'fileRoutes';
             $mixins[static::MIXIN_PERMALINKABLE_FILES] = $permalinkable_file_route_attribute_refs;
-            $attributes[] = 'fileRoutes';
         }
 
         // attributes with edit_relation_using_handsontable_input
@@ -357,9 +367,11 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
         // is_workflow_item
         if ($itemType->is_workflow_item) {
 
+            //$traits[] = '\neam\yii_workflow_core\traits\ItemTrait';
             $traits[] = 'ItemTrait';
-            $relations['changesets'] = "array(CActiveRecord::HAS_MANY, 'Changeset', array('id' => 'node_id'), 'through' => 'node')";
-            $mixins[static::MIXIN_HAS_MANY_HANDSONTABLE_INPUT] = 'changesets';
+            $mixins[static::MIXIN_HAS_MANY_HANDSONTABLE_INPUT][] = 'changesets';
+            $rules[] = '$this->flowStepRules()';
+            $relations[] = "array('changesets' => array(CActiveRecord::HAS_MANY, 'Changeset', array('id' => 'node_id'), 'through' => 'node'))";
 
         }
 
@@ -367,6 +379,7 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
         if ($itemType->is_preparable) {
 
             $mixins[static::MIXIN_QA_STATE] = [];
+            $rules[] = '$this->statusRequirementsRules()';
             $attributes[] = $itemType->table . '_qa_state_id';
 
         }

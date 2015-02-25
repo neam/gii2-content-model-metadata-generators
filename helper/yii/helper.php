@@ -35,11 +35,37 @@ class <?= $helperName . "\n" ?>
 
     }
 
+    static public function where($attribute)
+    {
+
+        return static::byBooleanAttribute()[$attribute];
+
+    }
+
+    /**
+     *
+     */
     static public function all()
     {
         return [
 <?php foreach ($itemTypes as $itemType): ?>
             '<?= $itemType->model_class; ?>' => '<?= $itemType->table; ?>',
+<?php endforeach; ?>
+        ];
+    }
+
+    /**
+     *
+     */
+    static public function byBooleanAttribute()
+    {
+        return [
+<?php foreach ($itemTypesByBooleanAttributes as $attribute=>$matchingItemTypes): ?>
+            '<?= $attribute ?>' => array(
+    <?php foreach ($matchingItemTypes as $itemType): ?>
+            '<?= $itemType->model_class; ?>' => '<?= $itemType->table; ?>',
+    <?php endforeach; ?>
+            ),
 <?php endforeach; ?>
         ];
     }

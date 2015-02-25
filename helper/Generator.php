@@ -66,6 +66,7 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
         $cmm = $this->getContentModelMetadata();
         $params = [
             'itemTypes' => $cmm->itemTypes,
+            'itemTypesByBooleanAttributes' => $this->generateItemTypesByBooleanAttributes($cmm->itemTypes),
             'helperName' => $helperName,
             'ns' => $this->ns,
         ];
@@ -77,6 +78,25 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
         );
 
         return $files;
+    }
+
+    public function generateItemTypesByBooleanAttributes($itemTypes)
+    {
+        $itemTypesByBooleanAttributes = [];
+        foreach (array_keys((array) $itemTypes[0]) as $attribute) {
+            if (strpos($attribute, "is_") === false && strpos($attribute, "generate_") === false) {
+                continue;
+            }
+            $matchingItemTypes = [];
+            foreach ($itemTypes as $itemType) {
+                if ($itemType->$attribute) {
+                    $matchingItemTypes[] = $itemType;
+                }
+            }
+            $itemTypesByBooleanAttributes[$attribute] = $matchingItemTypes;
+        }
+        //var_dump($itemTypes[0], $itemTypesByBooleanAttributes);die();
+        return $itemTypesByBooleanAttributes;
     }
 
 }

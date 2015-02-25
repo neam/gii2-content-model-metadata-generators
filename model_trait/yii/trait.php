@@ -28,10 +28,9 @@ trait <?= $traitName . "\n" ?>
     {
         $behaviors = [];
 
-<?php // MIXIN_HAS_MANY_HANDSONTABLE_INPUT ?>
+<?php // MIXIN_HAS_MANY_HANDSONTABLE_INPUT 
 
-<?php if (isset($mixins[Generator::MIXIN_HAS_MANY_HANDSONTABLE_INPUT])): $attributes = $mixins[Generator::MIXIN_HAS_MANY_HANDSONTABLE_INPUT]; ?>
-
+if (isset($mixins[Generator::MIXIN_HAS_MANY_HANDSONTABLE_INPUT])): $attributes = $mixins[Generator::MIXIN_HAS_MANY_HANDSONTABLE_INPUT]; ?>
         $behaviors['HasManyHandsontableInputBehavior'] = array(
             'class' => '\neam\yii_relations_ui_core\behaviors\HasManyHandsontableInputBehavior',
             'attributes' => array(
@@ -41,12 +40,12 @@ trait <?= $traitName . "\n" ?>
             ),
         );
 
-<?php endif; ?>
+<?php endif; 
 
-<?php // MIXIN_I18N_ATTRIBUTE_MESSAGES ?>
+// MIXIN_I18N_ATTRIBUTE_MESSAGES 
 
-<?php if (isset($mixins[Generator::MIXIN_I18N_ATTRIBUTE_MESSAGES])): $attributes = $mixins[Generator::MIXIN_I18N_ATTRIBUTE_MESSAGES]; ?>
-
+if (isset($mixins[Generator::MIXIN_I18N_ATTRIBUTE_MESSAGES])): $attributes = $mixins[Generator::MIXIN_I18N_ATTRIBUTE_MESSAGES]; ?>
+        // Model attributes and relations to make multilingual using yii-i18n-attribute-messages
         $behaviors['i18n-attribute-messages'] = array(
             'class' => 'I18nAttributeMessagesBehavior',
             'translationAttributes' => array(
@@ -60,36 +59,35 @@ trait <?= $traitName . "\n" ?>
             'editedMessageSourceComponent' => 'editedMessages',
         );
 
-<?php endif; ?>
+<?php endif;
 
-<?php // MIXIN_I18N_COLUMNS_ATTRIBUTE ?>
-<?php // MIXIN_I18N_COLUMNS_RELATION ?>
+// MIXIN_I18N_COLUMNS_ATTRIBUTE
+// MIXIN_I18N_COLUMNS_RELATION
 
-<?php if (isset($mixins[Generator::MIXIN_I18N_COLUMNS_ATTRIBUTE])): $attributes = $mixins[Generator::MIXIN_I18N_COLUMNS_ATTRIBUTE]; ?>
+if (isset($mixins[Generator::MIXIN_I18N_COLUMNS_ATTRIBUTE]) || isset($mixins[Generator::MIXIN_I18N_COLUMNS_RELATION])):
+    $attributes = !empty($mixins[Generator::MIXIN_I18N_COLUMNS_ATTRIBUTE]) ? $mixins[Generator::MIXIN_I18N_COLUMNS_ATTRIBUTE] : [];
+    $multilingualRelations = !empty($mixins[Generator::MIXIN_I18N_COLUMNS_RELATION]) ? $mixins[Generator::MIXIN_I18N_COLUMNS_RELATION] : [];
+    ?>
+        // Model attributes and relations to make multilingual using yii-i18n-columns
+        $behaviors['i18n-columns'] = array(
+            'class' => 'I18nColumnsBehavior',
+            'translationAttributes' => array(
+<?php foreach ($attributes as $attribute): ?>
+                <?= "'$attribute',\n" ?>
+<?php endforeach; ?>
+            ),
+            'multilingualRelations' => array(
+<?php foreach ($multilingualRelations as $relation): ?>
+                <?= "'$relation',\n" ?>
+<?php endforeach; ?>
+            ),
+        );
 
-        // List of model attributes and relations to make multilingual using yii-i18n-columns
-        $i18nColumns = DataModel::i18nColumns();
+<?php endif;
 
-        $i18nColumnsMap = array_intersect_key($i18nColumns['attributes'], $classNames);
-        $i18nColumnsMultilingualRelationsMap = array_intersect_key($i18nColumns['relations'], $classNames);
+// MIXIN_OWNABLE 
 
-        if (!empty($i18nColumnsMap)) {
-            $behaviors['i18n-columns'] = array(
-                'class' => 'I18nColumnsBehavior',
-                'translationAttributes' => array_values($i18nColumnsMap)[0],
-            );
-        }
-
-        if (!empty($i18nColumnsMultilingualRelationsMap)) {
-            $behaviors['i18n-columns']['multilingualRelations'] = array_values($i18nColumnsMultilingualRelationsMap)[0];
-        }
-
-<?php endif; ?>
-
-<?php // MIXIN_OWNABLE ?>
-
-<?php if (isset($mixins[Generator::MIXIN_OWNABLE])): ?>
-
+if (isset($mixins[Generator::MIXIN_OWNABLE])): ?>
         $behaviors['owner-behavior'] = array(
             'class' => 'OwnerBehavior',
         );
@@ -99,72 +97,59 @@ trait <?= $traitName . "\n" ?>
             unset($behaviors['owner-behavior']);
         }
 
-<?php endif; ?>
+<?php endif;
 
-<?php // MIXIN_PERMALINKABLE_FILES ?>
+// MIXIN_PERMALINKABLE_FILES 
 
-<?php if (isset($mixins[Generator::MIXIN_PERMALINKABLE_FILES])): $attributes = $mixins[Generator::MIXIN_PERMALINKABLE_FILES]; ?>
+if (isset($mixins[Generator::MIXIN_PERMALINKABLE_FILES])): $attributes = $mixins[Generator::MIXIN_PERMALINKABLE_FILES]; ?>
+        // Permalinkable/routable files
+        $behaviors['permalinkable-files'] = array(
+            'class' => '\neam\yii_permalinkable_items_core\behaviors\PermalinkableItemBehavior',
+            'relation' => 'fileRoutes',
+            'routeClass' => 'FileRoute',
+            'fileRouteAttributeRefs' => array(
+<?php foreach ($attributes as $attribute): ?>
+                <?= "'$attribute',\n" ?>
+<?php endforeach; ?>
+            ),
+        );
 
-        // Routable files
-        $permalinkableFiles = array_intersect_key(DataModel::permalinkableFiles(), $classNames);
-        if (!empty($permalinkableFiles)) {
-            // Just grab the values for the first defined class name in the list.
-            $fileRouteAttributeRefs = array_values($permalinkableFiles)[0];
-            $behaviors['HasManyHandsontableInputBehavior']['attributes'][] = 'fileRoutes';
-            $behaviors['PermalinkableItemBehavior'] = array(
-                'class' => '\neam\yii_permalinkable_items_core\behaviors\PermalinkableItemBehavior',
-                'relation' => 'fileRoutes',
-                'routeClass' => 'FileRoute',
-                'fileRouteAttributeRefs' => $fileRouteAttributeRefs,
-            );
-        }
+<?php endif;
 
-<?php endif; ?>
+// MIXIN_PERMALINKABLE_ITEM 
 
-<?php // MIXIN_PERMALINKABLE_ITEM ?>
+if (isset($mixins[Generator::MIXIN_PERMALINKABLE_ITEM])): ?>
+        // Permalinkable/routable items
+        $behaviors['permalinkable-item'] = array(
+            'class' => '\neam\yii_permalinkable_items_core\behaviors\PermalinkableItemBehavior',
+            'relation' => 'routes',
+            'routeClass' => 'Route',
+            'fileRouteAttributeRefs' => array(),
+        );
 
-<?php if (isset($mixins[Generator::MIXIN_PERMALINKABLE_ITEM])): ?>
+<?php endif;
 
-        // Routable items
-        $permalinkableItems = array_intersect_key(DataModel::permalinkableItems(), $classNames);
-        if (!empty($permalinkableItems)) {
-            $behaviors['HasManyHandsontableInputBehavior']['attributes'][] = 'routes';
-            $behaviors['PermalinkableItemBehavior'] = array(
-                'class' => '\neam\yii_permalinkable_items_core\behaviors\PermalinkableItemBehavior',
-                'relation' => 'routes',
-                'routeClass' => 'Route',
-                'fileRouteAttributeRefs' => array(),
-            );
-        }
+// MIXIN_RESTRICTED_ACCESS 
 
-<?php endif; ?>
-
-<?php // MIXIN_RESTRICTED_ACCESS ?>
-
-<?php if (isset($mixins[Generator::MIXIN_RESTRICTED_ACCESS])): ?>
-
-        $behaviors[] = static::MIXIN_RESTRICTED_ACCESS;
-
+if (isset($mixins[Generator::MIXIN_RESTRICTED_ACCESS])): ?>
         $behaviors['RestrictedAccessBehavior'] = array(
             'class' => '\RestrictedAccessBehavior',
         );
 
-<?php endif; ?>
+<?php endif;
 
-<?php // MIXIN_RELATIONAL_GRAPH_DB ?>
+// MIXIN_RELATIONAL_GRAPH_DB 
 
-<?php if (isset($mixins[Generator::MIXIN_RELATIONAL_GRAPH_DB])): ?>
-
+if (isset($mixins[Generator::MIXIN_RELATIONAL_GRAPH_DB])): ?>
         $behaviors['relational-graph-db'] = array(
             'class' => 'dna.vendor.neam.yii-relational-graph-db.behaviors.RelatedNodesBehavior',
         );
 
-<?php endif; ?>
+<?php endif;
 
-<?php // MIXIN_RELATED_ITEMS_SIR_TREVOR_UI ?>
+// MIXIN_RELATED_ITEMS_SIR_TREVOR_UI 
 
-<?php if (isset($mixins[Generator::MIXIN_RELATED_ITEMS_SIR_TREVOR_UI])): $attributes = $mixins[Generator::MIXIN_RELATED_ITEMS_SIR_TREVOR_UI]; ?>
-
+if (isset($mixins[Generator::MIXIN_RELATED_ITEMS_SIR_TREVOR_UI])): $attributes = $mixins[Generator::MIXIN_RELATED_ITEMS_SIR_TREVOR_UI]; ?>
         $behaviors['related-items-sir-trevor-ui-behavior'] = array(
             'class' => 'dna.vendor.neam.yii-relational-graph-db.behaviors.RelatedNodesSirTrevorUiBehavior',
             'attributes' => array(
@@ -206,16 +191,20 @@ trait <?= $traitName . "\n" ?>
             );
         }
 
+<?php endif;
+
+// MIXIN_QA_STATE 
+
+if (isset($mixins[Generator::MIXIN_QA_STATE])): ?>
+        $behaviors['qa-state'] = array(
+            'class' => 'QaStateBehavior',
+            'scenarios' => array_merge(
+                MetaData::qaStateCoreScenarios(),
+                LanguageHelper::qaStateTranslateScenarios()
+            ),
+        );
+
 <?php endif; ?>
-
-<?php // MIXIN_QA_STATE ?>
-
-<?php if (isset($mixins[Generator::MIXIN_QA_STATE])): ?>
-
-
-
-<?php endif; ?>
-
         return array_merge(
             parent::behaviors(), $behaviors
         );
@@ -228,11 +217,11 @@ trait <?= $traitName . "\n" ?>
     public function relations()
     {
         return array_merge(
-            parent::relations(), array(
-<?php foreach ($relations as $name => $relation): ?>
-                <?= "'$name' => $relation,\n" ?>
+            parent::relations(),
+<?php foreach ($relations as $relation): ?>
+            <?= "$relation,\n" ?>
 <?php endforeach; ?>
-            )
+            array()
         );
     }
 
@@ -242,14 +231,15 @@ trait <?= $traitName . "\n" ?>
     public function rules()
     {
         return array_merge(
-            parent::rules(), array(
+            parent::rules(),
 <?php foreach ($rules as $rule): ?>
-                <?= "$rule,\n" ?>
+            <?= "$rule,\n" ?>
 <?php endforeach; ?>
-            )
+            array()
         );
     }
 
+<?php if ($itemType->is_preparable): ?>
     /**
      * Define status-dependent fields
      * @return array
@@ -266,7 +256,9 @@ trait <?= $traitName . "\n" ?>
 <?php endforeach; ?>
         );
     }
+<?php endif; ?>
 
+<?php if ($itemType->is_workflow_item): ?>
     /**
      * Define step-dependent fields
      * @return array
@@ -283,7 +275,9 @@ trait <?= $traitName . "\n" ?>
 <?php endforeach; ?>
         );
     }
+<?php endif; ?>
 
+<?php if ($itemType->is_workflow_item): ?>
     public function flowStepCaptions()
     {
         return array(
@@ -292,6 +286,7 @@ trait <?= $traitName . "\n" ?>
 <?php endforeach; ?>
         );
     }
+<?php endif; ?>
 
     /**
      * @inheritdoc

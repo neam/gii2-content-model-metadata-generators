@@ -6,6 +6,7 @@
 
 namespace neam\yii_content_model_metadata_generators;
 
+use yii\base\ErrorException;
 use yii\helpers\Json;
 use Yii;
 
@@ -63,7 +64,11 @@ abstract class ContentModelMetadataGenerator extends \yii\gii\Generator
 
         $path = Yii::getAlias($this->jsonPathAlias);
         $json = file_get_contents($path);
-        return Json::decode($json, false);
+        $cmm = Json::decode($json, false);
+        if (empty($cmm)) {
+            throw new ErrorException("Content model metadata json was found empty");
+        }
+        return $cmm;
 
     }
 
