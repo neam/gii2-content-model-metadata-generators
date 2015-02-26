@@ -315,6 +315,21 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
             $relations[] = '$this->graphRelatableItemBaseRelations()';
             $attributes[] = 'node_id';
 
+            // has attributes with graph_relation_item_type_constraints
+            $graph_relation_item_type_constraints = [];
+            foreach ($itemType->attributes as $attribute) {
+                if (!empty($attribute->graph_relation_item_type_constraint)) {
+                    $relationName = $attribute->ref;
+                    $modelClass = $attribute->graph_relation_item_type_constraint == "*" ? "Node" : $attribute->graph_relation_item_type_constraint;
+                    $relations[] = '$this->relationalGraphDbRelation("' . $relationName . '", "' . $modelClass . '")';
+                    $graph_relation_item_type_constraints[$relationName] = $attribute->graph_relation_item_type_constraint;
+                }
+            }
+            if (!empty($graph_relation_item_type_constraints)) {
+                $mixins[static::MIXIN_RELATED_ITEMS_SIR_TREVOR_UI] = $graph_relation_item_type_constraints;
+                $mixins[static::MIXIN_RELATIONAL_GRAPH_DB] = $graph_relation_item_type_constraints;
+            }
+
         }
 
         // is_permalinkable

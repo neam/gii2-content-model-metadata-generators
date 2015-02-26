@@ -152,45 +152,17 @@ if (isset($mixins[Generator::MIXIN_RELATIONAL_GRAPH_DB])): ?>
 if (isset($mixins[Generator::MIXIN_RELATED_ITEMS_SIR_TREVOR_UI])): $attributes = $mixins[Generator::MIXIN_RELATED_ITEMS_SIR_TREVOR_UI]; ?>
         $behaviors['related-items-sir-trevor-ui-behavior'] = array(
             'class' => 'dna.vendor.neam.yii-relational-graph-db.behaviors.RelatedNodesSirTrevorUiBehavior',
-            'attributes' => array(
-                "related" => array(
-                    "ordered" => true,
-                    "relation" => "related",
-                    "ModelClass" => "*",
-                ),
-            )
+            'attributes' => array(),
         );
 
-        // Temporary - TODO: Refactor
-        if (isset($this->exercises)) {
-            $behaviors['related-items-sir-trevor-ui-behavior']['attributes']['exercises'] = array(
-                "ordered" => true,
-                "relation" => "exercises",
-                "ModelClass" => "Exercise",
-            );
-        }
-        if (isset($this->videos)) {
-            $behaviors['related-items-sir-trevor-ui-behavior']['attributes']['videos'] = array(
-                "ordered" => true,
-                "relation" => "videos",
-                "ModelClass" => "Video",
-            );
-        }
-        if (isset($this->snapshots)) {
-            $behaviors['related-items-sir-trevor-ui-behavior']['attributes']['snapshots'] = array(
-                "ordered" => true,
-                "relation" => "snapshots",
-                "ModelClass" => "Snapshot",
-            );
-        }
-        if (isset($this->dataArticles)) {
-            $behaviors['related-items-sir-trevor-ui-behavior']['attributes']['dataArticles'] = array(
-                "ordered" => true,
-                "relation" => "dataArticles",
-                "ModelClass" => "DataArticle",
-            );
-        }
+<?php foreach ($attributes as $relationName => $constraint): ?>
+        $behaviors['related-items-sir-trevor-ui-behavior']['attributes']['<?= "$relationName" ?>'] = array(
+            "ordered" => true,
+            "relation" => "<?= "$relationName" ?>",
+            "ModelClass" => "<?= "$constraint" ?>",
+        );
 
+<?php endforeach; ?>
 <?php endif;
 
 // MIXIN_QA_STATE 
