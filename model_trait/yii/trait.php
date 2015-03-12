@@ -77,8 +77,8 @@ if (isset($mixins[Generator::MIXIN_I18N_COLUMNS_ATTRIBUTE]) || isset($mixins[Gen
 <?php endforeach; ?>
             ),
             'multilingualRelations' => array(
-<?php foreach ($multilingualRelations as $relation): ?>
-                <?= "'$relation',\n" ?>
+<?php foreach ($multilingualRelations as $relation => $db_column): ?>
+                <?= "'$relation' => '$db_column',\n" ?>
 <?php endforeach; ?>
             ),
         );

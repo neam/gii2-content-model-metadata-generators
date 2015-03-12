@@ -271,9 +271,17 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
                 }
 
                 // Check attribute type
-
-
-                $mixins[$attribute->translatableBehaviorChoice->ref][] = $attribute->ref;
+                switch ($attribute->translatableBehaviorChoice->ref) {
+                    case static::MIXIN_I18N_COLUMNS_ATTRIBUTE:
+                    case static::MIXIN_I18N_ATTRIBUTE_MESSAGES:
+                        $mixins[$attribute->translatableBehaviorChoice->ref][] = $attribute->ref;
+                        break;
+                    case static::MIXIN_I18N_COLUMNS_RELATION:
+                        $mixins[static::MIXIN_I18N_COLUMNS_RELATION][$attribute->ref] = $attribute->implementation_comment; // TODO: Rename "implementation_comment" to "db_column"
+                        break;
+                    default:
+                        // Ignore
+                }
             }
 
             $rules[] = '$this->i18nRules()';
@@ -320,7 +328,7 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
             foreach ($itemType->attributes as $attribute) {
                 if (!empty($attribute->graph_relation_item_type_constraint)) {
                     $relationName = $attribute->ref;
-                    $modelClass = $attribute->graph_relation_item_type_constraint == "*" ? "Node" : $attribute->graph_relation_item_type_constraint;
+                    $modelClass = $attribute->graph_relation_item_type_constraint;
                     $relations[] = '$this->relationalGraphDbRelation("' . $relationName . '", "' . $modelClass . '")';
                     $graph_relation_item_type_constraints[$relationName] = $attribute->graph_relation_item_type_constraint;
                 }
