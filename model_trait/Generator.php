@@ -277,7 +277,7 @@ class Generator extends \neam\yii_content_model_metadata_generators\ContentModel
                         $mixins[$attribute->translatableBehaviorChoice->ref][] = $attribute->ref;
                         break;
                     case static::MIXIN_I18N_COLUMNS_RELATION:
-                        $mixins[static::MIXIN_I18N_COLUMNS_RELATION][$attribute->ref] = $attribute->implementation_comment; // TODO: Rename "implementation_comment" to "db_column"
+                        $mixins[static::MIXIN_I18N_COLUMNS_RELATION][$attribute->ref] = $attribute->db_column;
                         break;
                     default:
                         // Ignore
