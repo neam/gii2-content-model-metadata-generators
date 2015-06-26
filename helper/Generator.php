@@ -4,7 +4,7 @@
  * @copyright Copyright (c) 2015 Neam AB
  */
 
-namespace neam\yii_content_model_metadata_generators\helper;
+namespace neam\gii2_content_model_metadata_generators\helper;
 
 use Yii;
 use yii\gii\CodeFile;
@@ -17,7 +17,7 @@ use yii\helpers\Json;
  * @author Fredrik Wollsén <fredrik@neam.se>
  * @since 1.0
  */
-class Generator extends \neam\yii_content_model_metadata_generators\ContentModelMetadataGenerator
+class Generator extends \neam\gii2_content_model_metadata_generators\ContentModelMetadataGenerator
 {
 
     public $ns = 'app\helpers';

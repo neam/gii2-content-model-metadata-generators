@@ -1,7 +1,7 @@
-yii2-content-model-metadata-generators
+gii2-content-model-metadata-generators
 ===========
 
-Content model metadata code generators powered by Gii 2 (Yii 2 Framework)
+Content model metadata (behaviors, traits, relations configuration) code generator powered by Gii (Yii 2 Framework)
 
 Links
 -----

@@ -4,7 +4,7 @@
  * @copyright Copyright (c) 2015 Neam AB
  */
 
-namespace neam\yii_content_model_metadata_generators;
+namespace neam\gii2_content_model_metadata_generators;
 
 use yii\base\Application;
 use yii\base\BootstrapInterface;
@@ -12,7 +12,7 @@ use yii\base\BootstrapInterface;
 
 /**
  * Class Bootstrap
- * @package neam\yii_content_model_metadata_generators
+ * @package neam\gii2_content_model_metadata_generators
  * @author Fredrik Wollsén <fredrik@neam.se>
  */
 class Bootstrap implements BootstrapInterface
@@ -28,10 +28,10 @@ class Bootstrap implements BootstrapInterface
         if ($app->hasModule('gii')) {
 
             if (!isset($app->getModule('gii')->generators['content-model-metadata-model-trait'])) {
-                $app->getModule('gii')->generators['content-model-metadata-model-trait'] = 'neam\yii_content_model_metadata_generators\model_trait\Generator';
+                $app->getModule('gii')->generators['content-model-metadata-model-trait'] = 'neam\gii2_content_model_metadata_generators\model_trait\Generator';
             }
             if (!isset($app->getModule('gii')->generators['content-model-metadata-helper'])) {
-                $app->getModule('gii')->generators['content-model-metadata-helper'] = 'neam\yii_content_model_metadata_generators\helper\Generator';
+                $app->getModule('gii')->generators['content-model-metadata-helper'] = 'neam\gii2_content_model_metadata_generators\helper\Generator';
             }
         }
     }

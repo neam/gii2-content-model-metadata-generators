@@ -4,7 +4,7 @@
  * @copyright Copyright (c) 2015 Neam AB
  */
 
-namespace neam\yii_content_model_metadata_generators;
+namespace neam\gii2_content_model_metadata_generators;
 
 use yii\base\ErrorException;
 use yii\helpers\Json;

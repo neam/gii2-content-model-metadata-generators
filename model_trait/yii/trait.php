@@ -1,6 +1,6 @@
 <?php
 
-use \neam\yii_content_model_metadata_generators\model_trait\Generator;
+use \neam\gii2_content_model_metadata_generators\model_trait\Generator;
 
 /**
  * @var yii\web\View $this
