@@ -211,7 +211,6 @@ if (isset($mixins[Generator::MIXIN_QA_STATE])): ?>
         );
     }
 
-<?php if ($itemType->attributes): ?>
     /**
      * Define item type attributes
      * @return array
@@ -227,7 +226,6 @@ if (isset($mixins[Generator::MIXIN_QA_STATE])): ?>
 <?php endforeach; ?>
         );
     }
-<?php endif; ?>
 
 <?php if ($itemType->is_preparable): ?>
     /**
