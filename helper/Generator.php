@@ -26,8 +26,8 @@ class Generator extends \neam\gii2_content_model_metadata_generators\ContentMode
      * @inheritdoc
      */
     public $templates = [
-        'yii' => '@vendor/neam/yii2-content-model-metadata-generators/helper/yii',
-        'yii2' => '@vendor/neam/yii2-content-model-metadata-generators/helper/yii2',
+        'yii' => '@vendor/neam/gii2-content-model-metadata-generators/helper/yii',
+        'yii2' => '@vendor/neam/gii2-content-model-metadata-generators/helper/yii2',
     ];
 
     /**
