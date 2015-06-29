@@ -211,6 +211,24 @@ if (isset($mixins[Generator::MIXIN_QA_STATE])): ?>
         );
     }
 
+<?php if ($itemType->attributes): ?>
+    /**
+     * Define item type attributes
+     * @return array
+     */
+    public function itemTypeAttributes()
+    {
+        return array(
+<?php foreach ($itemType->attributes as $attribute): ?>
+            '<?= "$attribute->ref" ?>' => array(
+                'ref' => <?= "'{$attribute->ref}',\n" ?>
+                'type' => <?= "'{$attribute->attributeType->ref}',\n" ?>
+            ),
+<?php endforeach; ?>
+        );
+    }
+<?php endif; ?>
+
 <?php if ($itemType->is_preparable): ?>
     /**
      * Define status-dependent fields
