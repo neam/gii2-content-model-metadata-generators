@@ -31,6 +31,9 @@ class <?= $helperName . "\n" ?>
     {
 
         $labels = static::choiceFormatLabels();
+        if (!isset($labels[$modelClass])) {
+            throw new ItemTypeLabelMissingException();
+        }
         return $labels[$modelClass];
 
     }
@@ -96,5 +99,9 @@ class <?= $helperName . "\n" ?>
 <?php endforeach; ?>
         ];
     }
+
+}
+
+class ItemTypeLabelMissingException extends Exception {
 
 }
