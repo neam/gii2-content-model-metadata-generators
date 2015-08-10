@@ -38,6 +38,17 @@ class <?= $helperName . "\n" ?>
 
     }
 
+    static public function hint($modelClass)
+    {
+
+        $hints = static::hints();
+        if (!isset($hints[$modelClass])) {
+            return "";
+        }
+        return $hints[$modelClass];
+
+    }
+
     static public function where($attribute)
     {
 
@@ -74,7 +85,7 @@ class <?= $helperName . "\n" ?>
     }
 
     /**
-     * Frontend UI labels for the models
+     * Frontend UI labels for the item types
      * @return array
      */
     static public function choiceFormatLabels()
@@ -87,7 +98,20 @@ class <?= $helperName . "\n" ?>
     }
 
     /**
-     * Slugs for the model classes
+     * Frontend UI hints for the item types
+     * @return array
+     */
+    static public function hints()
+    {
+        return [
+<?php foreach ($itemTypes as $itemType): ?>
+            '<?= $itemType->model_class; ?>' => '<?= $itemType->hint; ?>',
+<?php endforeach; ?>
+        ];
+    }
+
+    /**
+     * Slugs for the item types
      * Used when setting semantic routes
      * @return array
      */
