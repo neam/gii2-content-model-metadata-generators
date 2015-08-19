@@ -220,8 +220,12 @@ if (isset($mixins[Generator::MIXIN_QA_STATE])): ?>
         return array(
 <?php foreach ($itemType->attributes as $attribute): ?>
             '<?= "$attribute->ref" ?>' => array(
-                'ref' => <?= "'{$attribute->ref}',\n" ?>
-                'type' => <?= "'{$attribute->attributeType->ref}',\n" ?>
+                'ref' => <?= var_export($attribute->ref, true) . ",\n" ?>
+                'type' => <?= var_export($attribute->attributeType->ref, true) . ",\n" ?>
+                'about_this_attribute' => <?= var_export($attribute->about_this_attribute, true) . ",\n" ?>
+                'label' => <?= var_export($attribute->label, true) . ",\n" ?>
+                'hint' => <?= var_export($attribute->hint, true) . ",\n" ?>
+                'translatable_behavior_choice' => <?= ($attribute->translatableBehaviorChoice ? var_export($attribute->translatableBehaviorChoice->ref, true) : "NULL") . ",\n" ?>
             ),
 <?php endforeach; ?>
         );
