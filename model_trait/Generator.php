@@ -391,7 +391,7 @@ class Generator extends \neam\gii2_content_model_metadata_generators\ContentMode
         if ($itemType->is_workflow_item) {
 
             //$traits[] = '\neam\yii_workflow_core\traits\ItemTrait';
-            $traits[] = 'ItemTrait';
+            $traits[] = 'WorkflowUiItemTrait';
             $mixins[static::MIXIN_HAS_MANY_HANDSONTABLE_INPUT][] = 'changesets';
             $rules[] = '$this->flowStepRules()';
             $relations[] = "array('changesets' => array(CActiveRecord::HAS_MANY, 'Changeset', array('id' => 'node_id'), 'through' => 'node'))";
