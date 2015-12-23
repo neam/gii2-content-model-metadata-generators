@@ -225,6 +225,7 @@ if (isset($mixins[Generator::MIXIN_QA_STATE])): ?>
                 'about_this_attribute' => <?= var_export($attribute->about_this_attribute, true) . ",\n" ?>
                 'label' => <?= var_export($attribute->label, true) . ",\n" ?>
                 'hint' => <?= var_export($attribute->hint, true) . ",\n" ?>
+                'db_column' => <?= var_export($attribute->db_column, true) . ",\n" ?>
                 'translatable_behavior_choice' => <?= ($attribute->translatableBehaviorChoice ? var_export($attribute->translatableBehaviorChoice->ref, true) : "NULL") . ",\n" ?>
             ),
 <?php endforeach; ?>
