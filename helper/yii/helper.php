@@ -30,9 +30,10 @@ class <?= $helperName . "\n" ?>
     static public function choiceFormatLabel($modelClass)
     {
 
+        $modelClass = str_replace('propel\\models\\', '', $modelClass);
         $labels = static::choiceFormatLabels();
         if (!isset($labels[$modelClass])) {
-            throw new ItemTypeLabelMissingException();
+            throw new ItemTypeLabelMissingException("No label specified for item type $modelClass");
         }
         return $labels[$modelClass];
 

@@ -177,6 +177,7 @@ if (isset($mixins[Generator::MIXIN_QA_STATE])): ?>
         );
 
 <?php endif; ?>
+        return $behaviors;
         return array_merge(
             parent::behaviors(), $behaviors
         );
@@ -189,7 +190,7 @@ if (isset($mixins[Generator::MIXIN_QA_STATE])): ?>
     public function relations()
     {
         return array_merge(
-            parent::relations(),
+            //parent::relations(),
 <?php foreach ($relations as $relation): ?>
             <?= "$relation,\n" ?>
 <?php endforeach; ?>
@@ -203,7 +204,7 @@ if (isset($mixins[Generator::MIXIN_QA_STATE])): ?>
     public function rules()
     {
         return array_merge(
-            parent::rules(),
+            //parent::rules(),
 <?php foreach ($rules as $rule): ?>
             <?= "$rule,\n" ?>
 <?php endforeach; ?>
