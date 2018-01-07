@@ -18,7 +18,7 @@ trait <?= $traitName . "\n" ?>
 {
 
 <?php foreach ($traits as $trait): ?>
-    use <?= "$trait;\n" ?>
+    <?= $trait === "WorkflowUiItemTrait" ? "" : "//" ?>use <?= "$trait;\n" ?>
 <?php endforeach; ?>
 
     /**
